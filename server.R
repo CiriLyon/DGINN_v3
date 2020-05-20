@@ -438,7 +438,7 @@ server = function(input , output ,session){
     }
     
    # maxPos <- max(maxPos) + log2(max(maxPos)) #j'ajoute log10 pour élargir le cadre un petit chouïa.
-    maxPos <- max(leaTab$GeneSize ) #largeur de la page est la taille du plus grand gène. 
+    maxGeneSize <- max(leaTab$GeneSize) #largeur de la page est la taille du plus grand gène. 
     maxDet <- max(maxDet)
     #-- Fin de la détermination de la position maximale.
     
@@ -470,7 +470,7 @@ server = function(input , output ,session){
     
     #-----------------------------------------------------------------------------------------------------------------------------
     #-- La légende
-    plot(0,0, axes  = F , xlim = c(0 , maxPos), ylim = c(0,maxDet+1 ), bty="n", xlab = "" , ylab = "" , type = "n") #main = names(lstGene)[1],
+    plot(0,0, axes  = F , xlim = c(0 , maxGeneSize), ylim = c(0,maxDet+1 ), bty="n", xlab = "" , ylab = "" , type = "n") #main = names(lstGene)[1],
     
     par(xpd = T)
     legend("topright", legend  = TAB4_col$Nom , fill = TAB4_col$coul,   horiz = T , title = "Used Methods",
@@ -498,9 +498,9 @@ server = function(input , output ,session){
       sizeCurrentGene <- unique(leaTab[leaTab$Gene==names(lstGene)[t],"GeneSize"])
       if(length(sizeCurrentGene)>1){
         rm(list =ls())
-        stop(paste("Incohérence dans le ficher de sortie du Pipeline : Plusieurs tailles pour un méme géne!! Cf. le géne nommé", names(lstGene)[t] ))
+        stop(paste("Incohérence dans le ficher de sortie du Pipeline : Plusieurs tailles pour un méme gène!! Cf. le gène nommé", names(lstGene)[t] ))
       }
-      #Fin vérification que la taille du géne
+      #Fin vérification de la taille du gène
       
       compMet <- 0 #compter les méthodes qui donnent des positions dans la colonne PSS.
       rm(cum)
@@ -556,7 +556,7 @@ server = function(input , output ,session){
       for(CC in 1:ncol(X5)){
         
         if(CC == 1){
-          plot(0,0, axes  = F , xlim =  c(0 , maxPos), ylim = c(0,maxDet ), bty="n", xlab = "" , ylab ="",type ="n") #main = names(lstGene)[1],
+          plot(0,0, axes  = F , xlim =  c(0 , maxGeneSize), ylim = c(0,maxDet ), bty="n", xlab = "" , ylab ="",type ="n") #main = names(lstGene)[1],
           mtext(names(lstGene)[t],side=2,las=1,line=-2, cex  = 1 )
         }
         
@@ -568,13 +568,13 @@ server = function(input , output ,session){
         CLR <- metColor[which(metColor$Nom == colnames(X5)[CC]), "coul"]
         
         segments(X , Y-1+0.1 , X , Y-0.2 , col = adjustcolor(CLR, alpha.f = 0.8), lwd = 2) #Traits vérticaux
-        segments(0 , -0.1 , sizeCurrentGene , -0.1 , col = "black" , lwd = 1) #Trait horizontal.
-        
-        
+        segments(0 , -0.1 , sizeCurrentGene , -0.1 , col = "black" , lwd = 1) #le Trait horizontal du bas.
+       
+        petitDist <- maxGeneSize/0.4e3 #Petite distance pour écarter un peu le cadre gris à droite et à gauche.   
         #-- Cadre
-        segments(0 , 0 , 0 , maxDet  , col = adjustcolor("grey50", alpha.f = 1), lwd = 0.1)
-        segments(0 , maxDet  , sizeCurrentGene ,maxDet  , col = "grey50" , lwd = 0.1)# le haut
-        segments(sizeCurrentGene , maxDet  , sizeCurrentGene ,0  , col = "grey50" , lwd = 0.1)
+        segments(0-petitDist , 0-petitDist , 0-petitDist , maxDet  , col = adjustcolor("grey50", alpha.f = 1), lwd = 0.1)  # le trait Gauche
+        segments(0-petitDist , maxDet  , sizeCurrentGene+petitDist ,maxDet  , col = "grey50" , lwd = 0.1)          # le trait haut
+        segments(sizeCurrentGene+petitDist , maxDet  , sizeCurrentGene+petitDist ,0  , col = "grey50" , lwd = 0.1) # le trait Droit
         #-- fin cadre
         
         #Affichage du nom du géne
@@ -591,16 +591,16 @@ server = function(input , output ,session){
       if(t %in%  c(PAS - 1, (PAS-1)+(1:length(lstGene))*(PAS) , length(lstGene))){ # pour le placement des axes de bas de page.
         
         #-- le tout dernier plot de la page, c'est pour poser l'axe qui porte la graduation des positions. 
-        #plot(X,Y, axes  = F , xlim =  c(0 , maxPos), ylim = c(0,maxDet ), bty="n", xlab ="" , ylab ="" , type = "n")
+        #plot(X,Y, axes  = F , xlim =  c(0 , maxGeneSize), ylim = c(0,maxDet ), bty="n", xlab ="" , ylab ="" , type = "n")
         
         
         
         #-- étendue de l'axe
-        etend <- seq(0,maxPos, length.out = 5) - (seq(0,maxPos, length.out = 5) %% 100)
+        etend <- seq(0,maxGeneSize, length.out = 5) - (seq(0,maxGeneSize, length.out = 5) %% 100)
         
-        #segments(0 , 0 , maxPos , 0 , col ="royalblue" , lwd = 2) #pour afficher le trait horizontal.
+        #segments(0 , 0 , maxGeneSize , 0 , col ="royalblue" , lwd = 2) #pour afficher le trait horizontal.
         
-        axis(side  = 1 , labels = etend , at = etend , cex.axis = 1 , outer = T ,  tick = T , pos = -0.05 , col ="royalblue", lwd.ticks= 0 ) #uniquement pour afficher les chiffres ,line = -6
+        axis(side  = 1 , labels = etend , at = etend , cex.axis = 1 , outer = T ,  tick = T , pos = -0.5 , col ="royalblue", lwd.ticks= 0 ) #uniquement pour afficher les chiffres ,line = -6
       }
     }#for(t in 1:length(lstGene)){
     
@@ -786,7 +786,7 @@ server = function(input , output ,session){
       axis(3, line = 0, labels =  c("0%" , paste0(bornSup*100,"%")), at = seq(0,bornSup, length.out = 2), las  = 1, tck = 0.02)
       
       #Cex <- log2(tabFin_v2$leaTab.Omega*100)/2
-      posX <- -0.025 #-0.05 #-0.05
+      posX <- -0.015 #-0.05 #-0.05
       
       text(rep(posX, length(xx)) , xx,  tabFin_v2$leaTab.Omega)
       
@@ -823,7 +823,7 @@ server = function(input , output ,session){
       
       #-----------------------------------------------------------------------------------------------------------------------------
       #-- La légende
-      plot(0,0, axes  = F , xlim =  c(0 , maxPos), ylim = c(0,maxDet+1 ), bty="n", ylab ="",type ="n") #main = names(lstGene)[1],
+      plot(0,0, axes  = F , xlim =  c(0 , maxGeneSize), ylim = c(0,maxDet+1 ), bty="n", ylab ="",type ="n") #main = names(lstGene)[1],
 
       par(xpd = T)
       legend("topright", legend  = TAB4_col$Nom , fill = TAB4_col$coul,   horiz = T , title = "Used Methods",
@@ -908,7 +908,7 @@ server = function(input , output ,session){
         for(CC in 1:ncol(X5)){
           
           if(CC == 1){
-            plot(0,0, axes  = F , xlim =  c(0 , maxPos), ylim = c(0,maxDet ), bty="n", ylab ="",type ="n") #main = names(lstGene)[1],
+            plot(0,0, axes  = F , xlim =  c(0 , maxGeneSize), ylim = c(0,maxDet ), bty="n", ylab ="",type ="n") #main = names(lstGene)[1],
             mtext(names(lstGene)[t],side=2,las=1,line = -2 , cex  = 1 )
           }
           
@@ -923,10 +923,11 @@ server = function(input , output ,session){
           segments(0 , -0.1 , sizeCurrentGene , -0.1 , col = "black" , lwd = 1) #Trait horizontal.
           
           
+          petitDist <- maxGeneSize/0.4e3 #Petite distance pour écarter un peu le cadre gris à droite et à gauche.   
           #-- Cadre
-          segments(0 , 0 , 0 , maxDet  , col = adjustcolor("grey50", alpha.f = 1), lwd = 0.1)
-          segments(0 , maxDet  , sizeCurrentGene ,maxDet  , col = "grey50" , lwd = 0.1)# le haut
-          segments(sizeCurrentGene , maxDet  , sizeCurrentGene ,0  , col = "grey50" , lwd = 0.1)
+          segments(0-petitDist , 0-petitDist , 0-petitDist , maxDet  , col = adjustcolor("grey50", alpha.f = 1), lwd = 0.1)  # le trait Gauche
+          segments(0-petitDist , maxDet  , sizeCurrentGene+petitDist ,maxDet  , col = "grey50" , lwd = 0.1)          # le trait haut
+          segments(sizeCurrentGene+petitDist , maxDet  , sizeCurrentGene+petitDist ,0  , col = "grey50" , lwd = 0.1) # le trait Droit
           #-- fin cadre
           
           #Affichage du nom du gène
@@ -940,14 +941,14 @@ server = function(input , output ,session){
       
       
       #-- le tout dernier plot de la page, c'est pour poser l'axe qui porte la graduation des positions. 
-      plot(X,Y, axes  = F , xlim =  c(0 , maxPos), ylim = c(0,maxDet ), bty="n", xlab ="" , ylab ="" , type = "n")
+      plot(X,Y, axes  = F , xlim =  c(0 , maxGeneSize), ylim = c(0,maxDet ), bty="n", xlab ="" , ylab ="" , type = "n")
       
       
       
       #-- étendue de l'axe
-      etend <- seq(0,maxPos, length.out = 5) - (seq(0,maxPos, length.out = 5) %% 100)
+      etend <- seq(0,maxGeneSize, length.out = 5) - (seq(0,maxGeneSize, length.out = 5) %% 100)
       
-      #segments(0 , maxDet , maxPos , maxDet , col ="royalblue" , lwd = 2) #pour afficher le trait horizontal.
+      #segments(0 , maxDet , maxGeneSize , maxDet , col ="royalblue" , lwd = 2) #pour afficher le trait horizontal.
       
       axis(side  = 1 , labels = etend , at = etend , cex.axis = 1 , outer = F ,  tick = T , pos = maxDet , col ="royalblue", lwd.ticks= 0 ) #uniquement pour afficher les chiffres ,line = -6
       
