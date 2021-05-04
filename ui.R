@@ -18,7 +18,7 @@ jscloseW    <- "shinyjs.closeWindow = function() { window.close(); }"
 ui = fluidPage(
   titlePanel("DGINN additional GUI"),
   useShinyjs(),                                           # Include shinyjs in the UI
-  extendShinyjs(text = jsResetCode, functions = c("winprint")), 
+  extendShinyjs(text = jsResetCode, functions = c("reset")), 
   extendShinyjs(text = jscloseW , functions = c("closeWindow")  ),
   
   theme = shinytheme("darkly"),
