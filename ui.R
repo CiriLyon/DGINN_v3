@@ -25,7 +25,7 @@ ui = fluidPage(
   
   
   titlePanel(h1(
-    a(href = "https://insb.cnrs.fr/fr/rencontre-avec-lucie-etienne-chercheuse-au-centre-international-de-recherche-en-infectiologie-ciri",
+    a(href = "https://academic.oup.com/nar/article/48/18/e103/5907962?login=true",
       "Visualization of DGINN results", style = "color:skyblue; font-size:130% "), align = "center"
   )) ,
   #titlePanel(h1("Insight into genes involved in evolutionary 'arms-races'",style = "color:skyblue; font-size:300% ", align = "center")) ,
